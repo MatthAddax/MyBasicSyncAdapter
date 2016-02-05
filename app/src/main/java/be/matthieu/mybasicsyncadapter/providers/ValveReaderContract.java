@@ -20,7 +20,7 @@ public class ValveReaderContract {
      * */
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + ValvesEntry.TABLE_NAME + " (" +
-                    ValvesEntry._ID + " INTEGER PRIMARY KEY," +
+                    ValvesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     ValvesEntry.COLUMN_NAME_VALVE_TITLE + TEXT_TYPE + COMMA_SEP +
                     ValvesEntry.COLUMN_NAME_VALVE_CONTENT + TEXT_TYPE +
             " )";

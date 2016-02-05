@@ -9,8 +9,29 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="be.matthieu.mybasicsyncadapter.MainActivity">
 
-    <TextView
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Ajouter valve"
+        android:id="@+id/buttonAdd"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Effacer valve"
+        android:id="@+id/buttonRem"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignLeft="@+id/buttonAdd"
+        android:layout_below="@+id/buttonAdd">
+        android:id="@+id/listValves"
+    </ListView>
 </RelativeLayout>
