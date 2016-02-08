@@ -15,6 +15,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name=".providers.ValveProvider"
+            android:authorities="be.matthieu.mybasicsyncadapter.valveprovider"
+            android:enabled="true"
+            android:exported="false"></provider>
     </application>
 
 </manifest>
