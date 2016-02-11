@@ -11,7 +11,10 @@ public class Valve {
         return _id;
     }
 
-    public void set_id(long _id) {
+    public void set_id(long _id) throws IllegalArgumentException{
+        if(_id < 0)
+            throw new IllegalArgumentException("ID must be positive");
+
         this._id = _id;
     }
 

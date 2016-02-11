@@ -14,38 +14,51 @@ import android.util.Log;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import be.matthieu.mybasicsyncadapter.helpers.ValveReaderHelper;
+import be.matthieu.mybasicsyncadapter.contracts.HoraireContract;
+import be.matthieu.mybasicsyncadapter.contracts.ValveContract;
+import be.matthieu.mybasicsyncadapter.helpers.DatabaseHelper;
 
 
-public class ValveProvider extends ContentProvider {
+public class HenalluxProvider extends ContentProvider {
     // database
-    private ValveReaderHelper database;
+    private DatabaseHelper database;
 
     // used for the UriMacher
+    //valve
     private static final int VALVES = 10;
-    private static final int VALVE_ID = 20;
+    private static final int VALVE_ID = 11;
+
+    //horaire
+    private static final int HORAIRES = 20;
+    private static final int HORAIRE_ID = 21;
+
 
     private static final String AUTHORITY = "be.matthieu.mybasicsyncadapter.valveprovider";
-    private static final String BASE_PATH = "valves";
 
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
+    public static final Uri CONTENT_URI_VALVE = Uri.parse("content://" + AUTHORITY + "/" + ValveContract.BASE_PATH);
 
-    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/valves";
-    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/valve";
+    public static final String CONTENT_TYPE_VALVE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/valves";
+    public static final String CONTENT_ITEM_VALVE_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/valve";
+
+    public static final String CONTENT_TYPE_HORAIRE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/horaires";
+    public static final String CONTENT_ITEM_HORAIRE_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/horaire";
 
     private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static {
-        sURIMatcher.addURI(AUTHORITY, BASE_PATH, VALVES);
-        sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", VALVE_ID);
+        sURIMatcher.addURI(AUTHORITY, ValveContract.BASE_PATH, VALVES);
+        sURIMatcher.addURI(AUTHORITY, ValveContract.BASE_PATH + "/#", VALVE_ID);
+
+        sURIMatcher.addURI(AUTHORITY, HoraireContract.BASE_PATH, HORAIRES);
+        sURIMatcher.addURI(AUTHORITY, HoraireContract.BASE_PATH + "/#", HORAIRE_ID);
     }
 
-    public ValveProvider() {
+    public HenalluxProvider() {
 
     }
 
     @Override
     public boolean onCreate() {
-        // TODO: Implement this to initialize your content provider on startup.
+        database = new DatabaseHelper(getContext());
         return false;
     }
 
@@ -60,21 +73,39 @@ public class ValveProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) throws IllegalArgumentException {
         int uriType = sURIMatcher.match(uri);
+
         SQLiteDatabase sqlDB = database.getWritableDatabase();
+        String id;
         int rowsDeleted = 0;
         switch (uriType) {
             case VALVES:
-                //rowsDeleted = sqlDB.delete(ValveReaderContract.ValvesEntry.TABLE_NAME, selection,selectionArgs);
+                rowsDeleted = sqlDB.delete(ValveContract.ValvesEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case VALVE_ID:
-                String id = uri.getLastPathSegment();
+                id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(ValveReaderContract.ValvesEntry.TABLE_NAME,
-                            ValveReaderContract.ValvesEntry._ID + "=" + id,
+                    rowsDeleted = sqlDB.delete(ValveContract.ValvesEntry.TABLE_NAME,
+                            ValveContract.ValvesEntry._ID + "=" + id,
                             null);
                 } else {
-                    rowsDeleted = sqlDB.delete(ValveReaderContract.ValvesEntry.TABLE_NAME,
-                            ValveReaderContract.ValvesEntry._ID + "=" + id
+                    rowsDeleted = sqlDB.delete(ValveContract.ValvesEntry.TABLE_NAME,
+                            ValveContract.ValvesEntry._ID + "=" + id
+                                    + " and " + selection,
+                            selectionArgs);
+                }
+                break;
+            case HORAIRES:
+                rowsDeleted = sqlDB.delete(HoraireContract.HoraireEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case HORAIRE_ID:
+                id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsDeleted = sqlDB.delete(HoraireContract.HoraireEntry.TABLE_NAME,
+                            HoraireContract.HoraireEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rowsDeleted = sqlDB.delete(HoraireContract.HoraireEntry.TABLE_NAME,
+                            HoraireContract.HoraireEntry._ID + "=" + id
                                     + " and " + selection,
                             selectionArgs);
                 }
@@ -100,13 +131,14 @@ public class ValveProvider extends ContentProvider {
         long id = 0;
         switch (uriType) {
             case VALVES:
-                id = sqlDB.insert(ValveReaderContract.ValvesEntry.TABLE_NAME, null, values);
+                id = sqlDB.insert(ValveContract.ValvesEntry.TABLE_NAME, null, values);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(BASE_PATH + "/" + id);
+        /* change to adapt URI*/
+        return Uri.parse(ValveContract.BASE_PATH + "/" + id);
     }
 
     @Override
@@ -119,7 +151,7 @@ public class ValveProvider extends ContentProvider {
         checkColumns(projection);
 
         // Set the table
-        queryBuilder.setTables(ValveReaderContract.ValvesEntry.TABLE_NAME);
+        queryBuilder.setTables(ValveContract.ValvesEntry.TABLE_NAME);
 
         int uriType = sURIMatcher.match(uri);
         switch (uriType) {
@@ -129,7 +161,7 @@ public class ValveProvider extends ContentProvider {
             case VALVE_ID:
                 Log.e("ValvesProvider", "One valve");
                 // adding the ID to the original query
-                queryBuilder.appendWhere(ValveReaderContract.ValvesEntry._ID + "=" + uri.getLastPathSegment());
+                queryBuilder.appendWhere(ValveContract.ValvesEntry._ID + "=" + uri.getLastPathSegment());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -152,7 +184,7 @@ public class ValveProvider extends ContentProvider {
         int rowsUpdated = 0;
         switch (uriType) {
             case VALVES:
-                rowsUpdated = sqlDB.update(ValveReaderContract.ValvesEntry.TABLE_NAME,
+                rowsUpdated = sqlDB.update(ValveContract.ValvesEntry.TABLE_NAME,
                         values,
                         selection,
                         selectionArgs);
@@ -160,14 +192,14 @@ public class ValveProvider extends ContentProvider {
             case VALVE_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsUpdated = sqlDB.update(ValveReaderContract.ValvesEntry.TABLE_NAME,
+                    rowsUpdated = sqlDB.update(ValveContract.ValvesEntry.TABLE_NAME,
                             values,
-                            ValveReaderContract.ValvesEntry._ID + "=" + id,
+                            ValveContract.ValvesEntry._ID + "=" + id,
                             null);
                 } else {
-                    rowsUpdated = sqlDB.update(ValveReaderContract.ValvesEntry.TABLE_NAME,
+                    rowsUpdated = sqlDB.update(ValveContract.ValvesEntry.TABLE_NAME,
                             values,
-                            ValveReaderContract.ValvesEntry._ID + "=" + id
+                            ValveContract.ValvesEntry._ID + "=" + id
                                     + " and "
                                     + selection,
                             selectionArgs);
@@ -182,8 +214,8 @@ public class ValveProvider extends ContentProvider {
 
     private void checkColumns(String[] projection) {
         String[] available = {
-                ValveReaderContract.ValvesEntry.COLUMN_NAME_VALVE_TITLE,
-                ValveReaderContract.ValvesEntry.COLUMN_NAME_VALVE_CONTENT
+                ValveContract.ValvesEntry.COLUMN_NAME_VALVE_TITLE,
+                ValveContract.ValvesEntry.COLUMN_NAME_VALVE_CONTENT
         };
 
         if (projection != null) {

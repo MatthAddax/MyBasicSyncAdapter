@@ -9,46 +9,47 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import be.matthieu.mybasicsyncadapter.contracts.ValveContract;
 import be.matthieu.mybasicsyncadapter.model.Valve;
-import be.matthieu.mybasicsyncadapter.helpers.ValveReaderHelper;
+import be.matthieu.mybasicsyncadapter.helpers.DatabaseHelper;
 
 /**
  * Created by Matthieu on 05-02-16  .
  */
 public class ValveDataSource {
     private SQLiteDatabase db;
-    private ValveReaderHelper valveReaderHelper;
+    private DatabaseHelper databaseHelper;
 
     private String[] allColumns = {
-            ValveReaderContract.ValvesEntry._ID,
-            ValveReaderContract.ValvesEntry.COLUMN_NAME_VALVE_TITLE,
-            ValveReaderContract.ValvesEntry.COLUMN_NAME_VALVE_CONTENT
+            ValveContract.ValvesEntry._ID,
+            ValveContract.ValvesEntry.COLUMN_NAME_VALVE_TITLE,
+            ValveContract.ValvesEntry.COLUMN_NAME_VALVE_CONTENT
     };
 
     public ValveDataSource(Context context) {
-        valveReaderHelper = new ValveReaderHelper(context);
+        databaseHelper = new DatabaseHelper(context);
     }
 
     public void open() throws SQLException {
-        db = valveReaderHelper.getWritableDatabase();
+        db = databaseHelper.getWritableDatabase();
     }
 
     public void close() {
-        valveReaderHelper.close();
+        databaseHelper.close();
     }
 
     public Valve createValve(String titre, String contenu){
         ContentValues valve = new ContentValues();
-        valve.put(ValveReaderContract.ValvesEntry.COLUMN_NAME_VALVE_TITLE, titre);
-        valve.put(ValveReaderContract.ValvesEntry.COLUMN_NAME_VALVE_CONTENT,contenu);
+        valve.put(ValveContract.ValvesEntry.COLUMN_NAME_VALVE_TITLE, titre);
+        valve.put(ValveContract.ValvesEntry.COLUMN_NAME_VALVE_CONTENT,contenu);
 
-        long insertId = db.insert(ValveReaderContract.ValvesEntry.TABLE_NAME, null, valve);
+        long insertId = db.insert(ValveContract.ValvesEntry.TABLE_NAME, null, valve);
 
-        Cursor cursor = db.query(ValveReaderContract.ValvesEntry.TABLE_NAME,
+        Cursor cursor = db.query(ValveContract.ValvesEntry.TABLE_NAME,
                 new String[]{
-                        ValveReaderContract.ValvesEntry.COLUMN_NAME_VALVE_TITLE,
-                        ValveReaderContract.ValvesEntry.COLUMN_NAME_VALVE_CONTENT},
-                ValveReaderContract.ValvesEntry._ID + " = " + insertId,
+                        ValveContract.ValvesEntry.COLUMN_NAME_VALVE_TITLE,
+                        ValveContract.ValvesEntry.COLUMN_NAME_VALVE_CONTENT},
+                ValveContract.ValvesEntry._ID + " = " + insertId,
                 null, null, null, null);
         cursor.moveToFirst();
         Valve newValve = cursorToValve(cursor);
@@ -60,7 +61,7 @@ public class ValveDataSource {
     public List<Valve> getValves(String[] columns, String whereClause, String[] conditions, String groupBy, String having, String orderBy){
         List<Valve> comments = new ArrayList<Valve>();
 
-        Cursor cursor = db.query(ValveReaderContract.ValvesEntry.TABLE_NAME,
+        Cursor cursor = db.query(ValveContract.ValvesEntry.TABLE_NAME,
                 columns,
                 whereClause, conditions,
                 groupBy, having,
@@ -88,7 +89,7 @@ public class ValveDataSource {
     public void deleteValve(Valve valve){
         long id = valve.get_id();
         System.out.println("Comment deleted with id: " + id);
-        db.delete(ValveReaderContract.ValvesEntry.TABLE_NAME, ValveReaderContract.ValvesEntry._ID
+        db.delete(ValveContract.ValvesEntry.TABLE_NAME, ValveContract.ValvesEntry._ID
                 + " = " + id, null);
     }
 

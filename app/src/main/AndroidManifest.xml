@@ -17,7 +17,7 @@
         </activity>
 
         <provider
-            android:name=".providers.ValveProvider"
+            android:name=".providers.HenalluxProvider"
             android:authorities="be.matthieu.mybasicsyncadapter.valveprovider"
             android:enabled="true"
             android:exported="false"></provider>
