@@ -13,9 +13,7 @@ import android.text.TextUtils;
 
 import be.matthieu.mybasicsyncadapter.AccountAuthenticatorActivity;
 
-/**
- * Created by Matthieu on 12/02/2016.
- */
+
 public class HenalluxAccountAuthenticator extends AbstractAccountAuthenticator {
     private Context context;
     private ServerAuthenticator sServerAuthenticate;
@@ -67,7 +65,7 @@ public class HenalluxAccountAuthenticator extends AbstractAccountAuthenticator {
      */
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-        //Lance l'intent de login (appelé ici AccountAuthenticatorActivity
+        //Lance l'intent de login (appelé ici AccountAuthenticatorActivity)
         final Intent intent = new Intent(context, AccountAuthenticatorActivity.class);
         intent.putExtra(AccountAuthenticatorActivity.ARG_ACCOUNT_TYPE, accountType);
         intent.putExtra(AccountAuthenticatorActivity.ARG_AUTH_TYPE, authTokenType);

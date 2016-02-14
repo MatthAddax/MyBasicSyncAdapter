@@ -1,6 +1,9 @@
 package be.matthieu.mybasicsyncadapter;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -19,6 +22,28 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        AccountManager accountManager = AccountManager.get(MainActivity.this);
+        Account[] accounts = accountManager.getAccountsByType(getString(R.string.account_type));
+        if(accounts.length == 0){
+            loadAuthenticatorActivity();
+        }
+        else{
+            syncAccount();
+        }
+    }
+
+    private void syncAccount() {
+    }
+
+    private void loadAuthenticatorActivity() {
+        String response = null;
+
+        Intent intent = new Intent(MainActivity.this, AccountAuthenticatorActivity.class);
+        intent.putExtra(AccountAuthenticatorActivity.ARG_ACCOUNT_TYPE, MainActivity.this.getString(R.string.account_type));
+        intent.putExtra(AccountAuthenticatorActivity.ARG_AUTH_TYPE, AccountAuthenticatorActivity.PARAM_AUTH_TYPE);
+        intent.putExtra(AccountAuthenticatorActivity.ARG_IS_ADDING_NEW_ACCOUNT, true);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+        startActivity(intent);
     }
 
 }

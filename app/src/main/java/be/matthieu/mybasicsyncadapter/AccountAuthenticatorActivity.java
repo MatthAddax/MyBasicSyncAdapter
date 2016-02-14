@@ -28,11 +28,11 @@ public class AccountAuthenticatorActivity extends android.accounts.AccountAuthen
     public static final String ARG_AUTH_TYPE = "auth_type";
     public static final String ARG_IS_ADDING_NEW_ACCOUNT = "is_adding_new_account";
     public static final String PARAM_USER_PASS = "password";
+    public static final String PARAM_AUTH_TYPE = "signin";
 
     private static final String ACCOUNT_TYPE = "be.matthieu.mybasicsyncadapter.account";
 
     private AccountManager accountManager;
-    private String mAuthTokenType = "signin";
     private ServerAuthenticator sServerAuthenticate;
 
     @Override
@@ -57,7 +57,7 @@ public class AccountAuthenticatorActivity extends android.accounts.AccountAuthen
         new AsyncTask<Void, Void, Intent>() {
             @Override
             protected Intent doInBackground(Void... params) {
-                String authtoken = sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
+                String authtoken = sServerAuthenticate.userSignIn(userName, userPass, PARAM_AUTH_TYPE);
                 final Intent res = new Intent();
                 res.putExtra(AccountManager.KEY_ACCOUNT_NAME, userName);
                 res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);
@@ -75,10 +75,11 @@ public class AccountAuthenticatorActivity extends android.accounts.AccountAuthen
     private void finishLogin(Intent intent) {
         String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
+
         final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
         if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
             String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-            String authtokenType = mAuthTokenType;
+            String authtokenType = PARAM_AUTH_TYPE;
             // Creating the account on the device and setting the auth token we got
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             accountManager.addAccountExplicitly(account, accountPassword, null);
