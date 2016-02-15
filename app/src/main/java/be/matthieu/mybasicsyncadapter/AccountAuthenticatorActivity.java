@@ -12,6 +12,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CursorAdapter;
@@ -58,6 +59,7 @@ public class AccountAuthenticatorActivity extends android.accounts.AccountAuthen
             @Override
             protected Intent doInBackground(Void... params) {
                 String authtoken = sServerAuthenticate.userSignIn(userName, userPass, PARAM_AUTH_TYPE);
+                Log.d("AuthToken", authtoken);
                 final Intent res = new Intent();
                 res.putExtra(AccountManager.KEY_ACCOUNT_NAME, userName);
                 res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);

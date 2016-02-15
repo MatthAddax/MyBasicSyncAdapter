@@ -12,8 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import be.matthieu.mybasicsyncadapter.authenticator.ServerAuthenticator;
 import be.matthieu.mybasicsyncadapter.contracts.ValveContract;
 import be.matthieu.mybasicsyncadapter.helpers.DatabaseHelper;
+import be.matthieu.mybasicsyncadapter.managers.NetworkManager;
 
 public class MainActivity extends AppCompatActivity{
 
